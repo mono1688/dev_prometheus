@@ -1,0 +1,25 @@
+global:
+
+route:
+  receiver: 'telegram-receiver'
+  group_by: ['instance']
+  group_wait: 30s
+  group_interval: 1m
+  repeat_interval: 1h
+  
+
+receivers:
+  - name: 'telegram-receiver'
+    webhook_configs:
+    - url: 'http://172.17.0.1:9119/alert'
+      send_resolved: true
+      http_config:
+        basic_auth:
+          username: 'admin'
+          password: '123456'
+
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'

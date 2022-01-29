@@ -1,0 +1,13 @@
+groups:
+- name: tcp_check
+  rules:
+  - alert: 端口宕机了
+    expr: probe_success{job="tcp_check"} == 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "{{$labels.instance}} 端口宕机了"
+      description: "{{ $labels.instance }} of job {{$labels.job}}服务停止运行,当前状态[{{$value}}]."
+      value: "{{ $value }}"
+  

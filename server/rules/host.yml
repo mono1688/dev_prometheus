@@ -1,0 +1,52 @@
+groups:
+- name: alert
+  rules:
+  - alert: 内存使用过高
+    expr: (1 - (node_memory_MemAvailable_bytes{} / (node_memory_MemTotal_bytes{})))* 100 > 80
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Instance {{ $labels.instance }} 内存使用过高"
+      description: "{{ $labels.instance }} of job {{$labels.job}}内存使用率超过80%,当前使用率[{{ $value }}]."
+      value: "{{ $value }}"
+  
+  - alert: cpu使用率过高
+    expr: 100-avg(irate(node_cpu_seconds_total{mode="idle"}[5m])) by(instance)*100 > 80
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Instance {{ $labels.instance }} cpu使用率过高"
+      description: "{{ $labels.instance }} of job {{$labels.job}}cpu使用率超过80%,当前使用率[{{ $value }}]."
+      value: "{{ $value }}"
+  
+  - alert: 磁盘空间超高
+    expr: (node_filesystem_size_bytes{mountpoint="/"} - node_filesystem_free_bytes{mountpoint="/"}) / node_filesystem_size_bytes{mountpoint="/"} * 100 > 80
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "{{$labels.instance}} 磁盘空间略高"
+      description: "{{ $labels.instance }} of job {{$labels.job}}磁盘空间略高超过90%请及时排障,当前使用率[{{ $value }}]."
+      value: "{{ $value }}"
+  
+  - alert: 服务器宕机了
+    expr: up{} == 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "{{$labels.instance}} 服务器宕机了"
+      description: "{{ $labels.instance }} of job {{$labels.job}}服务停止运行,当前状态[{{$value}}]."
+      value: "{{ $value }}"
+  
+  - alert: 宿主机磁盘IO过高
+    expr: irate(node_disk_writes_completed_total{job=~"node"}[1m]) > 70
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Instance {{ $labels.instance }} 宿主机磁盘IO过高"
+      description: "{{ $labels.instance }} of job {{$labels.job}}宿主机磁盘1分钟平均写入IO负载较高,当前值[{{ $value }}]iops."
+      value: "{{ $value }}"
