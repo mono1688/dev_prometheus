@@ -20,6 +20,10 @@ receivers:
 
 inhibit_rules:
   - source_match:
+      alertname: cpu使用率过高
       severity: 'critical'
     target_match:
       severity: 'warning'
+      
+    equal:
+      - instance
