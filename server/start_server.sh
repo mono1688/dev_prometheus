@@ -35,6 +35,15 @@ then
 fi
 
 
+if [ ! -f "lable.txt" ]; then
+  echo "lable.txt not exists"
+  exit 0
+else
+  sedTag=`head -n +1 lable.txt`
+  sed -i 's/TAG_FLAG/'$sedTag'/g' prometheus.yml
+fi
+
+
 current_path=`pwd`
 
 FIND_FILE=$current_path"/telegram_warn/Dockerfile"

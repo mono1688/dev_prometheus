@@ -19,6 +19,9 @@ scrape_configs:
   static_configs:
   - targets:
     - 172.17.0.1:9100
+    labels:
+      tag:   TAG_FLAG
+
 - job_name: tcp_check
   scrape_interval: 10s
   metrics_path: /probe

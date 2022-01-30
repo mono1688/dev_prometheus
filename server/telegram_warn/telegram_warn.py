@@ -13,9 +13,16 @@ file_path = "/etc/prometheus.yml"
 app = Flask(__name__)
 app.secret_key = 'lAlAlA123'
 basic_auth = BasicAuth(app)
-
-tag = os.getenv("TAG")
-chatID = int(os.getenv("CHATID"))
+tag_env = os.getenv("TAG") 
+info = {};
+try:  
+    for i in tag_env.split(','):
+        tag_list = i.split(":");
+        info[tag_list[0]] = tag_list[1]
+except:
+    print("tag wrong");
+    
+#chatID = int(os.getenv("CHATID"))
 token = os.getenv("TOKEN")
 
 
@@ -29,12 +36,13 @@ bot = telegram.Bot(token=token)
 
 @app.route('/', methods = ['GET'])
 def index():
+    print(tag);
 
     return "success"
     
 
     
-    
+
 @app.route('/add_node', methods = ['GET'])
 def add_node():
     try:
@@ -115,7 +123,7 @@ def delete_mysql():
         return "no node arg"
    
    
-'''
+
 @app.route('/add_redis', methods = ['GET'])
 def add_redis():
     
@@ -188,7 +196,7 @@ def delete_kafka():
     except:
         return "no node arg"
         
-'''     
+  
 
 
 def get_targets2(job_name="node"):
@@ -249,15 +257,24 @@ def do_prometheus_yml(content,targets,info_index):
     f.close();
     requests.post("http://172.17.0.1:9090/-/reload",timeout=3)
     
-    
+   
 @app.route('/alert', methods = ['POST'])
 def postAlertmanager():
+    
+    f = open("aa.log",'a+')
+    f.write(str(request.get_data(),"utf-8"));
+    f.close();
     content = json.loads(request.get_data())
-    message = f"报警标识:{tag}\n"
+    
+    #message = f"报警标识:{tag}\n"
     try:
         for alert in content['alerts']:
-            message += "状态: "+alert['status']+"\n"
+            labels_tag = alert['labels']['tag']
+            message = f"报警标识:{labels_tag}\n"
+            message += "状态: "+ alert['status']+"\n"
             instance = alert['labels']['instance']
+
+            chat_id = info[labels_tag]
             message += "实例: "+ instance + "\n"
             annotations = alert['annotations']
             if 'summary' in alert['annotations']:
@@ -276,12 +293,19 @@ def postAlertmanager():
                 currenTime = time.strftime("%Y-%m-%d %H:%M:%S",time.localtime(int(time.mktime(time.strptime(correctDate, "%Y-%m-%d %H:%M:%S"))) + 8*3600 ))
                 message += "时间: " + currenTime
 
-        print(message)
-        bot.sendMessage(chat_id=chatID, text=message)
+            #print(message)
+            #f = open("message.log",'a+')
+            #f.write(str(message,"utf-8"));
+            #f.close();
+            bot.sendMessage(chat_id=chat_id, text=message)
         return "Alert OK", 200
 
-    except Exception as error:
-        print(str(error));
+    except Exception as e:
+        f = open("error.log",'a+')
+        f.write("error:{}".format(e));
+        f.close();
+        #print(str(e));
         return "Alert fail", 200
-        
+
+          
 app.run(host='0.0.0.0',port=9119,debug=True)
