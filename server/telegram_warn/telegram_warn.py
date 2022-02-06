@@ -36,7 +36,7 @@ bot = telegram.Bot(token=token)
 
 @app.route('/', methods = ['GET'])
 def index():
-    print(tag);
+    #print(tag);
 
     return "success"
     
