@@ -7,7 +7,7 @@ import time;
 import yaml
 import requests
 
-file_path = "/etc/prometheus.yml"
+file_path = "/etc/prometheus/prometheus.yml"
 #file_path = "/opt/dev_prometheus/server/prometheus.yml"
 
 app = Flask(__name__)
