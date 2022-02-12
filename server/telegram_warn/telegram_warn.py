@@ -7,7 +7,8 @@ import time;
 import yaml
 import requests
 
-file_path = "/etc/prometheus/prometheus.yml"
+base_path = "/etc/prometheus/"
+file_path = f"{base_path}/prometheus.yml"
 #file_path = "/opt/dev_prometheus/server/prometheus.yml"
 
 app = Flask(__name__)
@@ -262,8 +263,8 @@ def do_prometheus_yml(content,targets,info_index):
 def postAlertmanager():
     host_info = {};
     try:
-        if os.path.exists("host.txt"):
-            file_content = open("host.txt",'r',encoding="utf-8").read().split("\n");
+        if os.path.exists(f"{base_path}/host.txt"):
+            file_content = open(f"{base_path}/host.txt",'r',encoding="utf-8").read().split("\n");
             for i in file_content:
                 if i and i!="\n":
                     line_cotent = i.split(",");
