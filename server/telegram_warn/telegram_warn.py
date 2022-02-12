@@ -260,6 +260,17 @@ def do_prometheus_yml(content,targets,info_index):
    
 @app.route('/alert', methods = ['POST'])
 def postAlertmanager():
+    host_info = {};
+    try:
+        if os.path.exists("host.txt"):
+            file_content = open("host.txt",'r',encoding="utf-8").read().split("\n");
+            for i in file_content:
+                if i and i!="\n":
+                    line_cotent = i.split(",");
+                    host_info[line_cotent[0]] = line_cotent[1]
+    except Exception as e:
+        print(e);
+        host_info = {}
     
     f = open("aa.log",'a+')
     f.write(str(request.get_data(),"utf-8"));
@@ -273,15 +284,18 @@ def postAlertmanager():
             message = f"报警标识:{labels_tag}\n"
             message += "状态: "+ alert['status']+"\n"
             instance = alert['labels']['instance']
+            old_instance = instance 
+            if instance in host_info.keys():
+                instance = host_info[instance]
 
             chat_id = info[labels_tag]
             message += "实例: "+ instance + "\n"
             annotations = alert['annotations']
             if 'summary' in alert['annotations']:
-                message += "名称: "+alert['annotations']['summary'].replace(f"Instance {instance}",'')+"\n"
+                message += "名称: "+alert['annotations']['summary'].replace(f"Instance {old_instance}",instance)+"\n"
 
             if 'description' in alert['annotations']:
-                message += "描述: "+alert['annotations']['description'].replace(f"{instance} of job ",'')+"\n"
+                message += "描述: "+alert['annotations']['description'].replace(f"{old_instance} of job ",instance)+"\n"
 
             if alert['status'] == "resolved":
                 correctDate = parser.parse(alert['endsAt']).strftime('%Y-%m-%d %H:%M:%S')
