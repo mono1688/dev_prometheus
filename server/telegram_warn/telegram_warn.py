@@ -7,7 +7,7 @@ import time;
 import yaml
 import requests
 
-base_path = "/etc/prometheus/"
+base_path = "/etc/prometheus"
 file_path = f"{base_path}/prometheus.yml"
 #file_path = "/opt/dev_prometheus/server/prometheus.yml"
 
