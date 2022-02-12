@@ -293,10 +293,10 @@ def postAlertmanager():
             message += "实例: "+ instance + "\n"
             annotations = alert['annotations']
             if 'summary' in alert['annotations']:
-                message += "名称: "+alert['annotations']['summary'].replace(f"Instance {old_instance}",instance)+"\n"
+                message += "名称: "+alert['annotations']['summary'].replace(f"{old_instance}",instance)+"\n"
 
             if 'description' in alert['annotations']:
-                message += "描述: "+alert['annotations']['description'].replace(f"{old_instance} of job ",instance)+"\n"
+                message += "描述: "+alert['annotations']['description'].replace(f"{old_instance}",instance)+"\n"
 
             if alert['status'] == "resolved":
                 correctDate = parser.parse(alert['endsAt']).strftime('%Y-%m-%d %H:%M:%S')
