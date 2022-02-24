@@ -273,6 +273,18 @@ def postAlertmanager():
         print(e);
         host_info = {}
     
+    deny_info = [];
+    try:
+        if os.path.exists(f"{base_path}/deny.txt"):
+            deny_content = open(f"{base_path}/deny.txt",'r',encoding="utf-8").read().split("\n");
+            for i in deny_content:
+                if i and i!="\n":
+                    deny_info.append(i);
+                   
+    except Exception as e:
+        print(e);
+        deny_info = []
+    
     f = open("aa.log",'a+')
     f.write(str(request.get_data(),"utf-8"));
     f.close();
@@ -286,6 +298,10 @@ def postAlertmanager():
             message += "状态: "+ alert['status']+"\n"
             instance = alert['labels']['instance']
             old_instance = instance 
+            
+            if instance in deny_info:
+                return "Alert OK", 200
+            
             if instance in host_info.keys():
                 instance = host_info[instance]
 
