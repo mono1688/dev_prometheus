@@ -295,7 +295,14 @@ def postAlertmanager():
         for alert in content['alerts']:
             labels_tag = alert['labels']['tag']
             message = f"报警标识:{labels_tag}\n"
-            message += "状态: "+ alert['status']+"\n"
+            alert_status = "unkown"
+            if alert['status'] =="firing":
+                alert_status = "❌"
+             
+            if alert['status'] =="resolved":
+                alert_status = "✅"
+            
+            message += "状态: "+ alert_status +"\n"
             instance = alert['labels']['instance']
             old_instance = instance 
             
